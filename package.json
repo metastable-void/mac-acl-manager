@@ -1,0 +1,36 @@
+{
+  "name": "@menhera/mac-acl-manager",
+  "version": "0.1.0",
+  "description": "",
+  "main": "dist/index.js",
+  "type": "module",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/metastable-void/mac-acl-manager.git"
+  },
+  "author": "metastable-void",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/metastable-void/mac-acl-manager/issues"
+  },
+  "homepage": "https://github.com/metastable-void/mac-acl-manager#readme",
+  "devDependencies": {
+    "@types/body-parser": "^1.19.5",
+    "@types/connect-sqlite3": "^0.9.5",
+    "@types/express": "^4.17.21",
+    "@types/express-session": "^1.18.0",
+    "@types/node": "^20.12.7",
+    "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "body-parser": "^1.20.2",
+    "connect-sqlite3": "^0.9.15",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-session": "^1.18.0"
+  }
+}

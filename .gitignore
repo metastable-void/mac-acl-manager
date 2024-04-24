@@ -1,0 +1,12 @@
+node_modules/**
+
+dist/**
+
+*.log
+*.db
+mac_acl.json
+
+*.lock
+
+.env
+sessions
