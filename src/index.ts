@@ -49,30 +49,39 @@ class MacAclStore {
         handle.write(JSON.stringify(macAcl, null, 2));
         handle.close();
         await fs.promises.rename(tmpPath, this.jsonPath);
+        let output = '';
+        for (const macaddress in macAcl) {
+            const name = macAcl[macaddress]!.name.replace(/[\n"'\\]/g, ' ');
+            output += `${macaddress}\n    Reply-Message = "${name}"\n`;
+        }
+        const outputPath = ACL_PATH;
+        await fs.promises.writeFile(outputPath, output);
+    }
+
+    private async lock<T>(fn: () => Promise<T>): Promise<T> {
+        const lockDir = this.jsonPath + '.lock';
+        await fs.promises.mkdir(lockDir, { recursive: false });
+        try {
+            return await fn();
+        } finally {
+            await fs.promises.rmdir(lockDir);
+        }
     }
 
     public async add(macAddress: string, device: Device): Promise<void> {
-        const lockDir = this.jsonPath + '.lock';
-        await fs.promises.mkdir(lockDir, { recursive: false });
-        try {
+        this.lock(async () => {
             const macAcl = await this.get();
             macAcl[macAddress] = device;
             await this.set(macAcl);
-        } finally {
-            await fs.promises.rmdir(lockDir);
-        }
+        });
     }
 
     public async remove(macAddress: string): Promise<void> {
-        const lockDir = this.jsonPath + '.lock';
-        await fs.promises.mkdir(lockDir, { recursive: false });
-        try {
+        this.lock(async () => {
             const macAcl = await this.get();
             delete macAcl[macAddress];
             await this.set(macAcl);
-        } finally {
-            await fs.promises.rmdir(lockDir);
-        }
+        });
     }
 }
 
@@ -88,10 +97,12 @@ const ADMIN_USERNAME = process.env.ADMIN_USERNAME;
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 const PORT = parseInt(process.env.PORT || '3021', 10);
 const SECRET = process.env.SECRET || generateRandomToken();
+const JSON_PATH = process.env.JSON_PATH || 'mac_acl.json';
+const ACL_PATH = process.env.ACL_PATH || 'mac_acl';
 
 const SQLiteStore = connect(session);
 
-const aclStore = new MacAclStore('mac_acl.json');
+const aclStore = new MacAclStore(JSON_PATH);
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(
