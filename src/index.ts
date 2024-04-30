@@ -50,10 +50,14 @@ class MacAclStore {
         handle.close();
         await fs.promises.rename(tmpPath, this.jsonPath);
         let output = '';
+        let output2 = '';
         for (const macaddress in macAcl) {
             const name = macAcl[macaddress]!.name.replace(/[\n"'\\]/g, ' ');
             output += `${macaddress}\n    Reply-Message = "${name}"\n`;
+            output2 += `${macaddress} Cleartext-Password := "${name}"\n`;
         }
+        const outputPath2 = MAC_USERS;
+        await fs.promises.writeFile(outputPath2, output2);
         const outputPath = ACL_PATH;
         await fs.promises.writeFile(outputPath, output);
     }
@@ -99,6 +103,7 @@ const PORT = parseInt(process.env.PORT || '3021', 10);
 const SECRET = process.env.SECRET || generateRandomToken();
 const JSON_PATH = process.env.JSON_PATH || 'mac_acl.json';
 const ACL_PATH = process.env.ACL_PATH || 'mac_acl';
+const MAC_USERS = process.env.MAC_USERS || 'mac_users';
 
 const SQLiteStore = connect(session);
 
