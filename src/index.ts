@@ -54,7 +54,8 @@ class MacAclStore {
         for (const macaddress in macAcl) {
             const name = macAcl[macaddress]!.name.replace(/[\n"'\\]/g, ' ');
             output += `${macaddress}\n    Reply-Message = "${name}"\n`;
-            output2 += `${macaddress} Cleartext-Password := "${name}"\n`;
+            const macaddress2 = macaddress.replace(/[:-]/g, '');
+            output2 += `${macaddress2} Cleartext-Password := "${macaddress2}"\n`;
         }
         const outputPath2 = MAC_USERS;
         await fs.promises.writeFile(outputPath2, output2);
